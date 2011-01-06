@@ -1,0 +1,24 @@
+{
+    "name": "redis-semantics",
+    "version": "0.0.0",
+    
+    "description": "This package includes [DSL tests for] and [a CoffeeScript implementation of] each Redis command, and povides (1) a require('redis')-consistent mock client/server for development/testing, (2) test coverage for your Redis client or server imlementation, (3) generated documentation",
+    
+    "url": "https://github.com/andrewschaaf/redis-semantics",
+    
+    "main": "build/redis-semantics.js",
+    
+    "dependencies": {
+        "coffee-script": ">=1.0.0",
+        "optimist": ">=0.1.2",
+        "hamljs": ">=0.4.5",
+        "async_testing": ">=0.1.7"
+    },
+    
+    "author": "Andrew Schaaf <andrew@andrewschaaf.com>",
+    
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/andrewschaaf/redis-semantics.git"
+    }
+}
