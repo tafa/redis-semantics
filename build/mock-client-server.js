@@ -1,28 +1,9 @@
 (function() {
   var MockClient, MockServer, assert, command_arguments, commands, name, preprocess_cmd_impl_args, _buf, _fn, _fn2, _i, _j, _len, _len2, _ref, _ref2;
-  var __slice = Array.prototype.slice;
+  var __hasProp = Object.prototype.hasOwnProperty, __slice = Array.prototype.slice;
   assert = require('assert');
   commands = require('./commands');
   command_arguments = require('./command-arguments');
-  MockClient = (function() {
-    function MockClient() {
-      this.server = new MockServer;
-    }
-    return MockClient;
-  })();
-  MockServer = (function() {
-    function MockServer() {
-      this.items = {};
-    }
-    MockServer.prototype.assertBuffer = function(x, msg) {
-      if (!(x instanceof Buffer)) {
-        throw new Error(msg || "Expected a buffer");
-      } else {
-        return x;
-      }
-    };
-    return MockServer;
-  })();
   _buf = function(x) {
     if (x instanceof Buffer) {
       return x;
@@ -30,6 +11,91 @@
       return new Buffer(x);
     }
   };
+  MockClient = (function() {
+    function MockClient() {
+      this.server = new MockServer;
+    }
+    return MockClient;
+  })();
+  MockServer = (function() {
+    var adjustIndex;
+    function MockServer() {
+      this.items = {};
+    }
+    MockServer.prototype.assert = function(x, msg) {
+      if (!x) {
+        throw new Error(mgs || "An assertion failed");
+      }
+    };
+    MockServer.prototype.assertNotDeepEqual = function(x, y) {
+      return assert.notDeepEqual(x, y);
+    };
+    MockServer.prototype.deepEqual = function(x, y) {
+      throw new Error("TODO");
+    };
+    MockServer.prototype.encodeKey = function(k) {
+      return _buf(k).toString('base64');
+    };
+    MockServer.prototype.decodeKey = function(k_64) {
+      return new Buffer(k_64, 'base64');
+    };
+    MockServer.prototype.assertString = function(x, msg) {
+      if (!(x instanceof Buffer)) {
+        throw new Error(msg || "Expected a string");
+      } else {
+        return x;
+      }
+    };
+    adjustIndex = function(i, len) {
+      if (i < 0) {
+        return len - i;
+      } else {
+        if (i >= len) {
+          return len - 1;
+        } else {
+          return i;
+        }
+      }
+    };
+    MockServer.prototype.assertList = function(x) {
+      if (!(x instanceof Array)) {
+        throw new Error("Expected an list");
+      }
+      if (x.length === 0) {
+        throw new Error("Stored lists must be non-empty");
+      }
+      return x;
+    };
+    MockServer.prototype.loadSet = function(k) {
+      if (!this.exists(this.items[keys[0]])) {
+        return {
+          type: 'set',
+          items: {},
+          cardinality: 0
+        };
+      } else {
+        return this.assertSet(this.items[keys[0]]);
+      }
+    };
+    MockServer.prototype.assertSet = function(x) {
+      var k, keyFound, _ref;
+      if (x.type !== 'set') {
+        throw new Error("Expected a set");
+      }
+      keyFound = false;
+      _ref = x.items;
+      for (k in _ref) {
+        if (!__hasProp.call(_ref, k)) continue;
+        keyFound = true;
+        break;
+      }
+      if (!keyFound) {
+        throw new Error("Stored sets must be non-empty");
+      }
+      return x;
+    };
+    return MockServer;
+  })();
   preprocess_cmd_impl_args = function(argNames, arguments) {
     var args, i, k, n, name, v, x;
     args = (function() {

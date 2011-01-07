@@ -5,7 +5,7 @@ module.exports =
     old = if not @items[k]?
       new Buffer 0
     else
-      @assertBuffer @items[k]
+      @assertString @items[k]
     
     newbuf = new Buffer (old.length + v.length)
     old.copy newbuf

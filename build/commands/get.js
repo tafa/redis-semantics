@@ -2,7 +2,7 @@
   module.exports = {
     get: function(k) {
       if (this.items[k] != null) {
-        return this.assertBuffer(this.items[k]);
+        return this.assertString(this.items[k]);
       } else {
         return null;
       }

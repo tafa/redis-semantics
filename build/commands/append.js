@@ -2,7 +2,7 @@
   module.exports = {
     append: function(k, v) {
       var newbuf, old;
-      old = !(this.items[k] != null) ? new Buffer(0) : this.assertBuffer(this.items[k]);
+      old = !(this.items[k] != null) ? new Buffer(0) : this.assertString(this.items[k]);
       newbuf = new Buffer(old.length + v.length);
       old.copy(newbuf);
       v.copy(newbuf, old.length);

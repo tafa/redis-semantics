@@ -4,6 +4,10 @@ commands = require './commands'
 command_arguments = require './command-arguments'
 
 
+_buf = (x) ->
+  if x instanceof Buffer then x else new Buffer x
+
+
 class MockClient
   
   constructor: () ->
@@ -15,15 +19,68 @@ class MockServer
   constructor: () ->
     @items = {}
   
-  assertBuffer: (x, msg) ->
+  #### Misc
+  
+  assert: (x, msg) ->
+    if not x
+      throw new Error (mgs or "An assertion failed")
+  
+  assertNotDeepEqual: (x, y) ->
+    assert.notDeepEqual x, y
+  
+  deepEqual: (x, y) ->
+    throw new Error "TODO"
+  
+  encodeKey: (k) ->
+    _buf(k).toString 'base64'
+  
+  decodeKey: (k_64) ->
+    new Buffer k_64, 'base64'
+  
+  #### String methods
+  
+  assertString: (x, msg) ->
     if x not instanceof Buffer
-      throw new Error (msg or "Expected a buffer")
+      throw new Error (msg or "Expected a string")
     else
       x
-
-
-_buf = (x) ->
-  if x instanceof Buffer then x else new Buffer x
+  
+  #### List methods
+  
+  adjustIndex = (i, len) ->
+    if i < 0
+      len - i
+    else
+      if i >= len
+        len - 1
+      else
+        i
+  
+  assertList: (x) ->
+    if x not instanceof Array
+      throw new Error "Expected an list"
+    if x.length == 0
+      throw new Error "Stored lists must be non-empty"
+    x
+  
+  #### Set methods
+  
+  loadSet: (k) ->
+    if not @exists @items[keys[0]]
+      {type: 'set', items: {}, cardinality: 0}
+    else
+      @assertSet @items[keys[0]]
+  
+  assertSet: (x) ->
+    if x.type != 'set'
+      throw new Error "Expected a set"
+    keyFound = false
+    for own k of x.items
+      keyFound = true
+      break
+    if not keyFound
+      throw new Error "Stored sets must be non-empty"
+    x
 
 
 preprocess_cmd_impl_args = (argNames, arguments) ->

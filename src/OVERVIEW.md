@@ -1,10 +1,22 @@
+# TODO: proper writeup.
+# This is the equivalent of scratch paper at the moment
 
-# TODO: proper writeup
+## Storage
+* string: Buffer
+* list: Array
+* set: <code>{type: 'set', items: {v1_64: 1, ...}, cardinality:n}</code>
+* hash: <code>{type: 'hash', items: {k1_64:v1_64, ...}}</code>
+* zset: TODO
 
 ## Command Implementation
-
+* [] or [] or []
 * this: a MockServer
-* k, v, n, items
+* k, v
+* items
+* n
+* TODO: offset, start, end, stop, count, index, keys, k2 (n?), index, k_src, k_dest
+* keys, items, ...: assert length >= 1
+* TODO have tests confirm that these are exhaustive
 * return types:
     * int
     * Buffer
@@ -13,7 +25,7 @@
     * "-..."
 
 ## Command Tests
-
+* blank lines are fine
 * A test: "...coffee... : ...coffee..."-list
 * k, v, kn, vn
     * bufgen("k2") -> byte + ALL_BYTES + testInvocationToken + "kv" + byte

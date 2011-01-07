@@ -2,7 +2,7 @@ module.exports =
   
   get: (k) ->
     if @items[k]?
-      @assertBuffer @items[k]
+      @assertString @items[k]
     else
       null
   

@@ -23,9 +23,12 @@ task 'build', 'src/ --> build/', () ->
     for name in require('./build/commands').names
       data = fs.readFileSync "src/commands/#{name}.coffee"
       code = data.toString 'utf-8'
-      m = code.match new RegExp "#{name}: \\((.+)\\) ->\n"
+      m = code.match new RegExp "#{name}: \\((.*)\\) ->\n"
       if not m
         throw new Error "Couldn't read implementation for #{name}"
-      args = m[1].split(', ')
+      args = if m[1].length > 0
+        m[1].split(', ')
+      else
+        []
       lines.push "exports.#{name} = #{JSON.stringify args};\n"
     fs.writeFileSync "build/command-arguments.js", lines.join('')
