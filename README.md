@@ -2,8 +2,12 @@
 ## Status: early development
 
 * The <code>.createClient</code> client/server works and can be used to replace (Redis + the node_redis client) in your apps' tests
-* Only a few commands so far
+* TODO: implement the rest of the commants
 * TODO: implement the (client/server-independent test)-runner
+
+#### Commands implemented (but not yet tested!)
+
+del, exists, getbit, getrange, getset, lindex, linsert, llen, lpop, lpush, lpushx, lrange, lrem, lset, ltrim, mget, mset, msetnx, randomkey, rename, renamenx, rpop, rpoplpush, rpush, rpushx, sadd, scard, sdiff, sdiffstore, setnx, sinter, strlen, type
 
 ## (Implementation) and (client/server-independent tests) for each command
 
