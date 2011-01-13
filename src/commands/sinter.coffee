@@ -1,20 +1,18 @@
 module.exports =
   
   sinter: (keys) ->
-    if keys.length == 1
-      []
-    else
-      items = {}
-      for own v_enc of @loadSet(keys[0]).items
-        items[v_enc] = 1
-      for k in keys[1...]
-        for own v_enc of @loadSet().items
-          if items[v_enc]?
-            items[v_enc] += 1
-      result = []
-      for own v_enc, count of items
-        if count == keys.length
-          result.push @decodeKey v_enc
+    items = {}
+    for own v_enc of @loadSet(keys[0]).items
+      items[v_enc] = 1
+    for k in keys[1...]
+      for own v_enc of @loadSet().items
+        if items[v_enc]?
+          items[v_enc] += 1
+    result = []
+    for own v_enc, count of items
+      if count == keys.length
+        result.push @decodeKey v_enc
+    result
   
   tests:
     example_two: """

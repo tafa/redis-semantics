@@ -39,6 +39,27 @@
     MockServer.prototype.decodeKey = function(k_64) {
       return new Buffer(k_64, 'base64');
     };
+    MockServer.prototype.bufferFromInt = function(n) {
+      return new Buffer('' + n);
+    };
+    MockServer.prototype.intFromBuffer = function(buf) {
+      var n;
+      n = 1 * buf.toString('utf-8');
+      this.assert((!isNaN(n)) && ((n % 1) === 0));
+      return n;
+    };
+    MockServer.prototype.random_0_to_1 = function() {
+      var x;
+      x = Math.random();
+      if (x === 1) {
+        return 0;
+      } else {
+        return x;
+      }
+    };
+    MockServer.prototype.randomInt = function(a, b) {
+      return Math.floor(this.random_0_to_1() * (b - a + 1)) + a;
+    };
     MockServer.prototype.assertString = function(x, msg) {
       if (!(x instanceof Buffer)) {
         throw new Error(msg || "Expected a string");
@@ -67,14 +88,14 @@
       return x;
     };
     MockServer.prototype.loadSet = function(k) {
-      if (!this.exists(this.items[keys[0]])) {
+      if (!this.exists(this.items[k])) {
         return {
           type: 'set',
           items: {},
           cardinality: 0
         };
       } else {
-        return this.assertSet(this.items[keys[0]]);
+        return this.assertSet(this.items[k]);
       }
     };
     MockServer.prototype.assertSet = function(x) {
@@ -94,20 +115,55 @@
       }
       return x;
     };
+    MockServer.prototype.loadHash = function(k) {
+      if (!this.exists(this.items[k])) {
+        return {
+          type: 'hash',
+          items: {},
+          length: 0
+        };
+      } else {
+        return this.assertHash(this.items[k]);
+      }
+    };
+    MockServer.prototype.assertHash = function(x) {
+      var k, keyFound, _ref;
+      if (x.type !== 'hash') {
+        throw new Error("Expected a hash");
+      }
+      keyFound = false;
+      _ref = x.items;
+      for (k in _ref) {
+        if (!__hasProp.call(_ref, k)) continue;
+        keyFound = true;
+        break;
+      }
+      if (!keyFound) {
+        throw new Error("Stored hashes must be non-empty");
+      }
+      return x;
+    };
     return MockServer;
   })();
   preprocess_cmd_impl_args = function(argNames, arguments) {
     var args, i, k, n, name, v, x;
-    args = (function() {
+    args = function() {
       var _ref, _results;
       _results = [];
       for (i = 0, _ref = arguments.length; (0 <= _ref ? i < _ref : i > _ref); (0 <= _ref ? i += 1 : i -= 1)) {
         x = arguments[i];
         name = argNames[i];
         _results.push((function() {
-          var _i, _len, _ref, _results;
-          if (name === 'k') {
+          var _i, _j, _len, _len2, _ref, _results, _results2;
+          if (name === 'k' || name === 'field') {
             return _buf(x).toString('base64');
+          } else if (name === 'keys') {
+            _results = [];
+            for (_i = 0, _len = x.length; _i < _len; _i++) {
+              k = x[_i];
+              _results.push(_buf(k).toString('base64'));
+            }
+            return _results;
           } else if (name === 'v') {
             return _buf(x);
           } else if (name === 'n') {
@@ -117,17 +173,19 @@
             assert.equal(n % 1, 0);
             return n;
           } else if (name === 'items') {
-            _results = [];
-            for (_i = 0, _len = x.length; _i < _len; _i++) {
-              _ref = x[_i], k = _ref[0], v = _ref[1];
-              _results.push([_buf(k), _buf(v)]);
+            _results2 = [];
+            for (_j = 0, _len2 = x.length; _j < _len2; _j++) {
+              _ref = x[_j], k = _ref[0], v = _ref[1];
+              _results2.push([_buf(k).toString('base64'), _buf(v)]);
             }
-            return _results;
+            return _results2;
+          } else {
+            throw new Error("Unsupported arg name: " + name);
           }
         })());
       }
       return _results;
-    }).apply(this, arguments);
+    }.apply(this, arguments);
     return args;
   };
   _ref = commands.names;

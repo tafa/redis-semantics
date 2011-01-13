@@ -37,6 +37,24 @@ class MockServer
   decodeKey: (k_64) ->
     new Buffer k_64, 'base64'
   
+  bufferFromInt: (n) ->
+    new Buffer('' + n)
+  
+  intFromBuffer: (buf) ->
+    n = 1 * buf.toString('utf-8')
+    @assert (not isNaN n) and ((n % 1) == 0)
+    n
+  
+  # <code>[0, 1)</code>,
+  # just in case Math.random is <code>[0, 1]</code>
+  random_0_to_1: () ->
+    x = Math.random()
+    if x == 1 then 0 else x
+  
+  # <code>[a, b] \cap \mathbb{Z}</code>
+  randomInt: (a, b) ->
+    Math.floor(@random_0_to_1() * (b - a + 1)) + a
+  
   #### String methods
   
   assertString: (x, msg) ->
@@ -66,10 +84,10 @@ class MockServer
   #### Set methods
   
   loadSet: (k) ->
-    if not @exists @items[keys[0]]
+    if not @exists @items[k]
       {type: 'set', items: {}, cardinality: 0}
     else
-      @assertSet @items[keys[0]]
+      @assertSet @items[k]
   
   assertSet: (x) ->
     if x.type != 'set'
@@ -81,6 +99,26 @@ class MockServer
     if not keyFound
       throw new Error "Stored sets must be non-empty"
     x
+  
+  #### Hash methods
+  
+  loadHash: (k) ->
+    if not @exists @items[k]
+      {type: 'hash', items: {}, length: 0}
+    else
+      @assertHash @items[k]
+  
+  assertHash: (x) ->
+    if x.type != 'hash'
+      throw new Error "Expected a hash"
+    keyFound = false
+    for own k of x.items
+      keyFound = true
+      break
+    if not keyFound
+      throw new Error "Stored hashes must be non-empty"
+    x
+  
 
 
 preprocess_cmd_impl_args = (argNames, arguments) ->
@@ -89,8 +127,11 @@ preprocess_cmd_impl_args = (argNames, arguments) ->
     x = arguments[i]
     name = argNames[i]
     
-    if name == 'k'
+    if name == 'k' or name == 'field'
       _buf(x).toString 'base64'
+    
+    else if name == 'keys'
+      (_buf(k).toString('base64') for k in x)
     
     else if name == 'v'
       _buf(x)
@@ -104,7 +145,10 @@ preprocess_cmd_impl_args = (argNames, arguments) ->
     
     else if name == 'items'
       for [k, v] in x
-        [_buf(k), _buf(v)]
+        [_buf(k).toString('base64'), _buf(v)]
+    
+    else
+      throw new Error "Unsupported arg name: #{name}"
   
   args
 

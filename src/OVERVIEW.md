@@ -5,7 +5,7 @@
 * string: Buffer
 * list: Array
 * set: <code>{type: 'set', items: {v1_64: 1, ...}, cardinality:n}</code>
-* hash: <code>{type: 'hash', items: {k1_64:v1_64, ...}}</code>
+* hash: <code>{type: 'hash', items: {k1_64:v1, ...}}</code>
 * zset: TODO
 
 ## Command Implementation
@@ -14,7 +14,7 @@
 * k, v
 * items
 * n
-* TODO: offset, start, end, stop, count, index, keys, k2 (n?), index, k_src, k_dest
+* TODO: offset, start, end, stop, count, index, keys, k2 (n?), index, k_src, k_dest, field
 * keys, items, ...: assert length >= 1
 * TODO have tests confirm that these are exhaustive
 * return types:
